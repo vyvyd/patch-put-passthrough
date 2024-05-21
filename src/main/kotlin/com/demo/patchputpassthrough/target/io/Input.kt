@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 class Input {
 
     private val orders : List<OrderEntity> = listOf(
-        OrderEntity(id = 1, consignee = "Max", deliveryArea = "Munich")
+        OrderEntity(id = 1, consignee = "Max", deliveryArea = "Munich", comment = "Posted comment")
     )
 
     fun getById(id: Int) : OrderEntity? {

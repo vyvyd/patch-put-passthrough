@@ -40,47 +40,90 @@ class GatewayOrderControllerTest {
             .perform(
                 put("/gateway/order/{id}", 1)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
+                    .content(
+                        """
                         {
                         "consignee": "Mark",
-                        "deliveryArea": "Berlin"
+                        "deliveryArea": "Berlin",
+                        "comment": "Posted comment"
                         }
                         """.trimIndent()
                     )
             )
             .andExpect(status().isOk)
 
-        verify { output.store(OrderEntity(
-            id = 1,
-            consignee = "Mark",
-            deliveryArea = "Berlin"
-            ))
+        verify {
+            output.store(
+                OrderEntity(
+                    id = 1,
+                    consignee = "Mark",
+                    deliveryArea = "Berlin",
+                    comment = "Posted comment"
+                )
+            )
         }
     }
 
     @Test
-    fun `patching just a single field in the order works`() {
+    fun `patching just a single non-nullable field in the order works`() {
         every { output.store(any()) } just Runs
 
         mockMvc
             .perform(
                 patch("/gateway/order/{id}", 1)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
+                    .content(
+                        """
                         {
                         "consignee": "Mark"
                         }
                     """.trimIndent()
-                )
+                    )
             )
             .andExpect(status().isOk)
 
-        verify { output.store(OrderEntity(
-            id = 1,
-            consignee = "Mark",
-            deliveryArea = "Berlin"
-        ))
+        verify {
+            output.store(
+                OrderEntity(
+                    id = 1,
+                    consignee = "Mark", // not Max
+                    deliveryArea = "Munich",
+                    comment = "Posted comment"
+                )
+            )
         }
     }
-}
 
+
+    @Test
+    fun `patching allows one to update a nullable field to null`() {
+        every { output.store(any()) } just Runs
+
+        mockMvc
+            .perform(
+                patch("/gateway/order/{id}", 1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        """
+                        {
+                        "consignee": "Mark",
+                        "comment": null
+                        }
+                    """.trimIndent()
+                    )
+            )
+            .andExpect(status().isOk)
+
+        verify {
+            output.store(
+                OrderEntity(
+                    id = 1,
+                    consignee = "Mark", // not Max
+                    deliveryArea = "Munich",
+                    comment = null
+                )
+            )
+        }
+    }
+
+}

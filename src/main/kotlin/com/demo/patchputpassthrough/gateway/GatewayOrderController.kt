@@ -1,5 +1,6 @@
 package com.demo.patchputpassthrough.gateway
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import feign.okhttp.OkHttpClient
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.context.annotation.Bean
@@ -8,11 +9,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class PassThroughOrderDTO(
-    val id: Optional<Int> ? = null,
-    val consignee: Optional<String>? = null,
-    val deliveryArea: Optional<String>? = null
+    val id: Optional<Int?>? = null,
+    val consignee: Optional<String?>? = null,
+    val deliveryArea: Optional<String?>? = null,
+    val comment: Optional<String?>? = null
 )
 
 @RestController
